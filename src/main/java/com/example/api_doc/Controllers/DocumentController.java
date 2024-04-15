@@ -9,9 +9,11 @@ import com.example.api_doc.Services.IDocumentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.*;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
@@ -34,9 +36,9 @@ public class DocumentController {
         this.iDocumentService = service;
     }
     @PostMapping
-    public Optional<Document> addDocument(@RequestParam("file") MultipartFile file) throws DocumentNotAddedException, NoSuchAlgorithmException, IOException {
+    public Optional<Document> addDocument(@RequestParam("metadata") String metadata,@RequestParam("file") MultipartFile file) throws DocumentNotAddedException, NoSuchAlgorithmException, IOException {
 
-        Optional<Document> document = iDocumentService.addDocument(file);
+        Optional<Document> document = iDocumentService.addDocument(metadata,file);
         return document ;
     }
 

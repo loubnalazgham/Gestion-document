@@ -17,7 +17,7 @@ import java.util.Optional;
 
 public interface IDocumentService {
 
-    Optional<Document> addDocument(MultipartFile  file) throws DocumentNotAddedException, IOException, NoSuchAlgorithmException;
+    Optional<Document> addDocument(String metadata,MultipartFile  file) throws DocumentNotAddedException, IOException, NoSuchAlgorithmException;
 
     List<Document> getAllDocument();
 

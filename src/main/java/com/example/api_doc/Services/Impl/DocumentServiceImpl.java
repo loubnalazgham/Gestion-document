@@ -58,11 +58,9 @@ public class DocumentServiceImpl implements IDocumentService {
 
 
     @Override
-    public Optional<Document> addDocument(MultipartFile file) throws DocumentNotAddedException, IOException, NoSuchAlgorithmException {
-        DocumentRequest document = new DocumentRequest();
-        MetaData metaData  = new MetaData();
-        metaData.setAttributes(List.of(new Attribute("content-type",file.getContentType()),new Attribute("size",String.valueOf(file.getSize())),new Attribute("name",file.getName())));
-        document.setMetadataSup(metaData);
+    public Optional<Document> addDocument(String metadata,MultipartFile file) throws DocumentNotAddedException, IOException, NoSuchAlgorithmException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        DocumentRequest document = objectMapper.readValue(metadata, DocumentRequest.class);
         Document documentMapped = getDocumentMapped(document);
         String hashFile = getHashFile(file);
         documentMapped.setHashedDocument(hashFile);
