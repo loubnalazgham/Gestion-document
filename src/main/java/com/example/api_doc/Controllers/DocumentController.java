@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.Date;
 
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/documents")
 public class DocumentController {
