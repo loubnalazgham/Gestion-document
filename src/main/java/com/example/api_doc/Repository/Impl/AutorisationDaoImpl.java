@@ -45,7 +45,7 @@ public class AutorisationDaoImpl implements IAutorisationDAO {
 
     @Override
     public List<Autorisation> getAllAutorisations() {
-        return null;
+        return jdbcTemplate.query(properties.getProperty("select.autorisations"),getRowMapperAutorisation());
     }
 
     private MapSqlParameterSource getSqlParameterSourceAutorisation(Autorisation autorisation){
@@ -61,12 +61,16 @@ public class AutorisationDaoImpl implements IAutorisationDAO {
                 .id(rs.getInt(AUTORISATION_ID))
                 .user(User.builder()
                         .id(rs.getInt(AUTORISATION_USER_ID))
+                        .nom(rs.getString("NOM_USER"))
                         .build())
                 .document(Document.builder()
                         .uuid(rs.getInt(AUTORISATION_DOCUMENT_ID))
+                        .nomDocument(rs.getString("NOM_DOCUMENT"))
                         .build())
+                .typeAutorisation(rs.getString(AUTORISATION_TYPE_AUTORISATION))
                 .build();
 
     }
+
 
 }
