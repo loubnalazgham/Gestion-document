@@ -23,14 +23,14 @@ public class AutorisationController {
 
     @Autowired
     private IAutorisationService autorisationService;
-
+//loubna lazgham
     @PostMapping
     public Optional<Autorisation> addAutorisation(@RequestBody Autorisation autorisation) throws AutorisationNotAddedException {
         Optional<Autorisation> addedAutorisation = autorisationService.addAutorisation(autorisation);
         return addedAutorisation;
 
     }
-
+//OMAR BOUKIOUD
     @GetMapping
     public List<Autorisation> getAllDocument() throws AutorisationNotFoundException {
         return autorisationService.getAllAutorisations();

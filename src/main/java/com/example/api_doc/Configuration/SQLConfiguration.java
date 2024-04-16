@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.sql.DataSource;
 
 
+
 @Configuration
 @Transactional
 public class SQLConfiguration {

@@ -27,11 +27,13 @@ public class UserDaoImpl implements IUserDAO {
     public UserDaoImpl(NamedParameterJdbcTemplate jdbcTemplate){
         this.jdbcTemplate = jdbcTemplate;
     }
+   //LOUBNA LAZGHAM
     @Override
     public List<User> getAllUsers() {
         return jdbcTemplate.query(properties.getProperty("select.users"),getRowMapperUser());
     }
 
+//omar boukioud
 
 
     @Override

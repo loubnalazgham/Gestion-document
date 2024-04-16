@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @ToString
+
 public class DocumentRequest {
 //    private Integer uuid;
 //    private String nomDocument;

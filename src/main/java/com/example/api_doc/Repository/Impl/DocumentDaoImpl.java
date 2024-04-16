@@ -40,7 +40,7 @@
         private String dossierPath;
         @Resource(name = "documentProperties")
         private Properties properties;
-
+//omar boukioud
         public DocumentDaoImpl(NamedParameterJdbcTemplate jdbcTemplate) {
             this.jdbcTemplate = jdbcTemplate;
         }
@@ -62,12 +62,12 @@
             }
 
         }
-
+//loubna lazgham
         @Override
         public List<Document> getAllDocument() {
             return jdbcTemplate.query(properties.getProperty("select.documents"),getRowMapperDocument());
         }
-
+//loubna lazgham
         @Override
         public Optional<Document> getDocumentById(Integer DocumentID) {
             Map<String,Object> params = new HashMap<>();
@@ -79,7 +79,7 @@
             }
 
         }
-
+//omar boukioud
         @Override
         public Optional<Document> getDocumentByHashedDocument(String hashedDocument) {
             Map<String,Object> params = new HashMap<>();
@@ -90,7 +90,7 @@
                 return Optional.empty();
             }
         }
-
+//loubna lazgham
         @Override
         public Integer deleteDocument(Integer DocumentID) throws DocumentNotDeletedException {
             Map<String,Object> params = new HashMap<>();
@@ -126,7 +126,7 @@
                 return Collections.emptyList();
             }
         }
-
+//OMARBOUKIOUD
         private MapSqlParameterSource getSqlParameterSourceDocument(Document document){
             return new MapSqlParameterSource()
                     .addValue(DOCUMENT_ID,document.getUuid())
@@ -137,7 +137,7 @@
                     .addValue(DOCUMENT_LINK,document.getLinkDocument())
                     .addValue(DOCUMENT_HASHED_DOCUMENT,document.getHashedDocument());
         }
-
+//omar boukioud
         private RowMapper<Document> getRowMapperDocument(){
             return (rs, rowNum) -> Document.builder()
                     .uuid(rs.getInt(DOCUMENT_ID))

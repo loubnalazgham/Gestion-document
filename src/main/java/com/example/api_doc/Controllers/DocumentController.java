@@ -35,43 +35,47 @@ public class DocumentController {
     public DocumentController(IDocumentService service) {
         this.iDocumentService = service;
     }
+
+//omar boukioud
     @PostMapping
     public Optional<Document> addDocument(@RequestParam("metadata") String metadata,@RequestParam("file") MultipartFile file) throws DocumentNotAddedException, NoSuchAlgorithmException, IOException {
 
         Optional<Document> document = iDocumentService.addDocument(metadata,file);
         return document ;
     }
+//    loubna lazgham
 
     @GetMapping
     public List<Document> getAllDocument() {
         return iDocumentService.getAllDocument();
     }
-
+//loubna lazgham
     @GetMapping("/{documentID}")
     public  Optional<Document> getDocumentById(@PathVariable Integer documentID) {
         return iDocumentService.getDocumentById(documentID);
     }
-
+//omar boukioud
     @GetMapping("/hashed/{hashedDocument}")
     public  Optional<Document> getDocumentByHashedDocument(@PathVariable String hashedDocument) {
         return iDocumentService.getDocumentByHashedDocument(hashedDocument);
     }
-
+//omar boukioud
     @PutMapping
     public Optional<Document> updateDocument(@RequestBody DocumentRequest document) throws DocumentUpdateFailException, NoSuchAlgorithmException, JsonProcessingException {
         return iDocumentService.updateDocument(document);
     }
-
+//loubna lazgham
     @DeleteMapping("/{documentID}")
     public Integer deleteDocument(@PathVariable Integer documentID) throws DocumentNotDeletedException {
         return iDocumentService.deleteDocument(documentID);
     }
+//    loubna lazgham
     @GetMapping("/byNom")
     public List<Document> getDocumentByNom(@RequestParam String nom) {
         return iDocumentService.getDocumentByNom(nom);
     }
 
-
+//loubna lazgham
 
     @GetMapping("/search")
     public List<Document> searchDocuments(
@@ -81,7 +85,7 @@ public class DocumentController {
         return iDocumentService.searchDocuments(nom, type,date_de_creation);
     }
 
-
+//omar boukioud
     @GetMapping("/download/{id}")
     public String telechargerFichier(@PathVariable Integer id){
       return iDocumentService.telechargerFichier(id);

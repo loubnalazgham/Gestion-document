@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @ToString
+
 public class MetaData {
     List<Attribute> attributes = new ArrayList<>();
 

@@ -56,7 +56,7 @@ public class DocumentServiceImpl implements IDocumentService {
         this.iDocumentDAO = repository;
     }
 
-
+//omar boukioud
     @Override
     public Optional<Document> addDocument(String metadata,MultipartFile file) throws DocumentNotAddedException, IOException, NoSuchAlgorithmException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -72,22 +72,22 @@ public class DocumentServiceImpl implements IDocumentService {
         }
 
     }
-
+//loubna lazgham
     @Override
     public List<Document> getAllDocument() {
         return iDocumentDAO.getAllDocument();
     }
-
+//loubna lazgham
     @Override
     public Optional<Document> getDocumentById(Integer DocumentID) {
         return iDocumentDAO.getDocumentById(DocumentID);
     }
-
+//omar boukioud
     @Override
     public Optional<Document> getDocumentByHashedDocument(String hashedDocument) {
         return iDocumentDAO.getDocumentByHashedDocument(hashedDocument);
     }
-
+//loubna lazgham
     @Override
     public Integer deleteDocument(Integer documentID) throws DocumentNotDeletedException {
         return iDocumentDAO.deleteDocument(documentID);
@@ -104,7 +104,7 @@ public class DocumentServiceImpl implements IDocumentService {
         return iDocumentDAO.getDocumentByNom(nom);
     }
 
-
+//omar boukioud
     public Document getDocumentMapped(DocumentRequest document) throws JsonProcessingException, NoSuchAlgorithmException {
         ModelMapper modelMapper = new ModelMapper();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -118,7 +118,7 @@ public class DocumentServiceImpl implements IDocumentService {
         documentMapped.setMetadata(jsonString);
         return  documentMapped;
     }
-
+//omar boukioud /loubna lazgham
     @Override
     public String telechargerFichier(Integer id){
         try {
@@ -151,6 +151,7 @@ public class DocumentServiceImpl implements IDocumentService {
             return "Erreur lors du téléchargement : EXCEPTION";
         }
     }
+    //omar boukioud
     private RowMapper<Document> rowMapper = (rs, rowNum) -> {
         Document document = new Document();
         document.setUuid(rs.getInt("UUID"));
@@ -166,7 +167,7 @@ public class DocumentServiceImpl implements IDocumentService {
 
         return document;
     };
-
+//loubna lazgham
     public List<Document> searchDocuments(String nom, String type,Date date_de_creation) {
         StringBuilder sb = new StringBuilder("SELECT * FROM Document WHERE 1=1 ");
         List<Object> params = new ArrayList<>();
@@ -191,7 +192,7 @@ public class DocumentServiceImpl implements IDocumentService {
 
         return jdbcTemplate.query(sb.toString(), rowMapper, params.toArray());
     }
-
+//omar boukioud /loubna lazgham
     public String getHashFile(MultipartFile file) throws IOException, NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] buffer = new byte[8192];

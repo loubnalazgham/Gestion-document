@@ -22,6 +22,7 @@ import java.util.Properties;
 import static com.example.api_doc.Utils.ApiConstants.*;
 import static com.example.api_doc.Utils.ApiConstants.DOCUMENT_LINK;
 
+
 @Repository
 public class AutorisationDaoImpl implements IAutorisationDAO {
 
@@ -30,6 +31,7 @@ public class AutorisationDaoImpl implements IAutorisationDAO {
 
     @Resource(name = "autorisationProperties")
     private Properties properties;
+//    LOUBNA LAZGHAM
     @Override
     public Optional<Autorisation> addAutorisation(Autorisation autorisation) throws AutorisationNotAddedException {
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -42,12 +44,12 @@ public class AutorisationDaoImpl implements IAutorisationDAO {
             throw  new AutorisationNotAddedException("Problème d'ajout d'autorisation");
         }
     }
-
+//OMARBOUKIOUD
     @Override
     public List<Autorisation> getAllAutorisations() {
         return jdbcTemplate.query(properties.getProperty("select.autorisations"),getRowMapperAutorisation());
     }
-
+//loubna lazgham
     private MapSqlParameterSource getSqlParameterSourceAutorisation(Autorisation autorisation){
         return new MapSqlParameterSource()
                 .addValue(AUTORISATION_ID,autorisation.getId())
@@ -55,7 +57,7 @@ public class AutorisationDaoImpl implements IAutorisationDAO {
                 .addValue(AUTORISATION_DOCUMENT_ID,autorisation.getDocument().getUuid())
                 .addValue(AUTORISATION_USER_ID,autorisation.getUser().getId());
     }
-
+//omar boukioud
     private RowMapper<Autorisation> getRowMapperAutorisation(){
         return (rs, rowNum) -> Autorisation.builder()
                 .id(rs.getInt(AUTORISATION_ID))
