@@ -5,16 +5,14 @@ import com.example.api_doc.Entities.Document;
 import com.example.api_doc.Entities.User;
 import com.example.api_doc.Services.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
+@CrossOrigin("*")
 public class UserController {
 
     @Autowired
