@@ -6,6 +6,7 @@ import com.example.api_doc.Exceptions.DocumentNotDeletedException;
 import com.example.api_doc.Exceptions.DocumentUpdateFailException;
 import com.example.api_doc.Requests.DocumentRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -15,7 +16,7 @@ import java.util.Optional;
 
 public interface IDocumentService {
 
-    Optional<Document> addDocument(final DocumentRequest document) throws DocumentNotAddedException, IOException, NoSuchAlgorithmException;
+    Optional<Document> addDocument(MultipartFile  file) throws DocumentNotAddedException, IOException, NoSuchAlgorithmException;
 
     List<Document> getAllDocument();
 
@@ -29,4 +30,8 @@ public interface IDocumentService {
     List<Document> getDocumentByNom(String nom);
     List<Document> getDocumentByDateCreation(Date date);
     List<Document> getDocumentByType(String type);
-}
+     List<Document> searchDocuments(String nom, String type, Date date_de_creation) ;
+
+
+
+    }

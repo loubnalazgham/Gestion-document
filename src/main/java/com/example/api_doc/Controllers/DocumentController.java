@@ -27,10 +27,14 @@ public class DocumentController {
     private IDocumentService iDocumentService;
 
 
+    @Autowired
+    public DocumentController(IDocumentService service) {
+        this.iDocumentService = service;
+    }
     @PostMapping
-    public Optional<Document> addDocument(@RequestBody DocumentRequest documentRequest) throws DocumentNotAddedException, NoSuchAlgorithmException, IOException {
+    public Optional<Document> addDocument(@RequestParam("file") MultipartFile file) throws DocumentNotAddedException, NoSuchAlgorithmException, IOException {
 
-        Optional<Document> document = iDocumentService.addDocument(documentRequest);
+        Optional<Document> document = iDocumentService.addDocument(file);
         return document ;
     }
 
@@ -73,5 +77,11 @@ public class DocumentController {
         return iDocumentService.getDocumentByType(type);
     }
 
-
+    @GetMapping("/search")
+    public List<Document> searchDocuments(
+            @RequestParam(required = false) String nom,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date date_de_creation) {
+        return iDocumentService.searchDocuments(nom, type,date_de_creation);
+    }
 }

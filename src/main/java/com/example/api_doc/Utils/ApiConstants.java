@@ -10,6 +10,7 @@ public final class ApiConstants {
     public static final String DOCUMENT_DATE_CREATION       = "DATE_CREATION";
     public static final String DOCUMENT_METADATA       = "METADATA";
     public static final String DOCUMENT_HASHED_DOCUMENT       = "HASHED_DOCUMENT";
+    public static final String DOCUMENT_LINK      = "LINK_DOCUMENT";
 
     // Infos USER
     public static final String USER_ID      = "ID_USER";

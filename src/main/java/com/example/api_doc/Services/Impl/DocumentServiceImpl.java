@@ -7,6 +7,7 @@ import com.example.api_doc.Exceptions.DocumentUpdateFailException;
 import com.example.api_doc.Repository.IDocumentDAO;
 import com.example.api_doc.Requests.Attribute;
 import com.example.api_doc.Requests.DocumentRequest;
+import com.example.api_doc.Requests.MetaData;
 import com.example.api_doc.Services.IDocumentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,14 +15,16 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -37,21 +40,32 @@ public class DocumentServiceImpl implements IDocumentService {
     @Autowired
     private IDocumentDAO iDocumentDAO;
 
-
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+    @Autowired
+    public DocumentServiceImpl(IDocumentDAO repository) {
+        this.iDocumentDAO = repository;
+    }
 
 
     @Override
-    public Optional<Document> addDocument(DocumentRequest document) throws DocumentNotAddedException, IOException, NoSuchAlgorithmException {
+    public Optional<Document> addDocument(MultipartFile file) throws DocumentNotAddedException, IOException, NoSuchAlgorithmException {
+        DocumentRequest document = new DocumentRequest();
+        MetaData metaData  = new MetaData();
+        metaData.setAttributes(List.of(new Attribute("auteur","younss"),new Attribute("size","14 bits")));
+        document.setMetadataSup(metaData);
         Document documentMapped = getDocumentMapped(document);
+        String hashFile = getHashFile(file);
+        documentMapped.setHashedDocument(hashFile);
         Optional<Document> documentByHashedDocument = getDocumentByHashedDocument(documentMapped.getHashedDocument());
         if (documentByHashedDocument.isPresent()) {
             throw new DocumentNotAddedException("Document existe deja avec ce code de hachage! ");
         }else {
-            String nomFichier = documentMapped.getNomDocument()+"."+documentMapped.getTypeDocument();
-            String contenuFichier = documentMapped.getMetadata().replace('{', ' ').replace('}', ' ').replace(',', '\n');
-
-            enregistrerFichier(dossierPath, nomFichier, contenuFichier);
-            return iDocumentDAO.addDocument(documentMapped);
+//            String nomFichier = documentMapped.getNomDocument()+"."+documentMapped.getTypeDocument();
+//            String contenuFichier = documentMapped.getMetadata().replace('{', ' ').replace('}', ' ').replace(',', '\n');
+//
+//            enregistrerFichier(dossierPath, nomFichier, contenuFichier);
+            return iDocumentDAO.addDocument(documentMapped,file);
         }
 
     }
@@ -102,7 +116,7 @@ public class DocumentServiceImpl implements IDocumentService {
         // Créez un objet MessageDigest avec l'algorithme de hachage souhaité (SHA-256)
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         // Exemple de métadonnées (à remplacer par vos propres données)
-        String hashedDocument = document.getNomDocument()+document.getTypeDocument()+document.getDateCreation()+document.getMetadata();
+        String hashedDocument = document.getMetadata();
         // Convertissez les métadonnées en tableau de bytes
         byte[] metadataBytes = hashedDocument.getBytes();
         // Mettez à jour le hachage avec les métadonnées
@@ -131,8 +145,8 @@ public class DocumentServiceImpl implements IDocumentService {
 
         documentMapped.setMetadata(jsonString);
 
-        String hashedDocument = getHashedDocument(documentMapped);
-        documentMapped.setHashedDocument(hashedDocument);
+//        String hashedDocument = getHashedDocument(documentMapped);
+//        documentMapped.setHashedDocument(hashedDocument);
         return  documentMapped;
     }
 
@@ -157,5 +171,57 @@ public class DocumentServiceImpl implements IDocumentService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    private RowMapper<Document> rowMapper = (rs, rowNum) -> {
+        Document document = new Document();
+        document.setUuid(rs.getInt("UUID"));
+        document.setNomDocument(rs.getString("NOM_DOCUMENT"));
+        document.setTypeDocument(rs.getString("TYPE_DOCUMENT"));
+        document.setLinkDocument(rs.getString("LINK_DOCUMENT"));
+        java.sql.Date dateCreation = rs.getDate("DATE_CREATION");
+        if (dateCreation != null) {
+            LocalDateTime localDateTime = dateCreation.toLocalDate().atStartOfDay();
+            document.setDateCreation(localDateTime);
+        }        document.setMetadata(rs.getString("METADATA"));
+        document.setHashedDocument(rs.getString("HASHED_DOCUMENT"));
+
+        return document;
+    };
+
+    public List<Document> searchDocuments(String nom, String type,Date date_de_creation) {
+        StringBuilder sb = new StringBuilder("SELECT * FROM Document WHERE 1=1 ");
+        List<Object> params = new ArrayList<>();
+
+        if (nom != null) {
+            sb.append("AND NOM_DOCUMENT LIKE ?");
+            params.add("%" + nom + "%");
+        }
+        if (type != null) {
+            sb.append("AND TYPE_DOCUMENT = ?");
+            params.add(type);
+        }
+        if (date_de_creation != null) {
+            sb.append("AND DATE_CREATION = ?");
+            params.add(date_de_creation);
+        }
+
+        return jdbcTemplate.query(sb.toString(), rowMapper, params.toArray());
+    }
+
+    public String getHashFile(MultipartFile file) throws IOException, NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] buffer = new byte[8192];
+        int bytesRead;
+        try (InputStream inputStream = file.getInputStream()) {
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                digest.update(buffer, 0, bytesRead);
+            }
+        }
+        byte[] hashBytes = digest.digest();
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : hashBytes) {
+            hexString.append(String.format("%02x", b));
+        }
+        return hexString.toString();
     }
 }

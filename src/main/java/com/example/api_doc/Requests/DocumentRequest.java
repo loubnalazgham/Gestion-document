@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
 @Builder
 @ToString
 public class DocumentRequest {
-    private Integer uuid;
-    private String nomDocument;
-    private String typeDocument;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-    private LocalDateTime dateCreation;
+//    private Integer uuid;
+//    private String nomDocument;
+//    private String typeDocument;
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+//    private LocalDateTime dateCreation;
     private MetaData metadataSup;
 }
