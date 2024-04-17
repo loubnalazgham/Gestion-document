@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
@@ -41,6 +43,9 @@ public class DocumentServiceImpl implements IDocumentService {
     @Value("${dossier.chemin}")
     private String dossierPath;
 
+    @Value("${saveDir.chemin}")
+    private String saveDir;
+
     @Autowired
     private IDocumentDAO iDocumentDAO;
 
@@ -56,7 +61,7 @@ public class DocumentServiceImpl implements IDocumentService {
     public Optional<Document> addDocument(MultipartFile file) throws DocumentNotAddedException, IOException, NoSuchAlgorithmException {
         DocumentRequest document = new DocumentRequest();
         MetaData metaData  = new MetaData();
-        metaData.setAttributes(List.of(new Attribute("auteur","younss"),new Attribute("size","14 bits")));
+        metaData.setAttributes(List.of(new Attribute("content-type",file.getContentType()),new Attribute("size",String.valueOf(file.getSize())),new Attribute("name",file.getName())));
         document.setMetadataSup(metaData);
         Document documentMapped = getDocumentMapped(document);
         String hashFile = getHashFile(file);
@@ -65,10 +70,6 @@ public class DocumentServiceImpl implements IDocumentService {
         if (documentByHashedDocument.isPresent()) {
             throw new DocumentNotAddedException("Document existe deja avec ce code de hachage! ");
         }else {
-//            String nomFichier = documentMapped.getNomDocument()+"."+documentMapped.getTypeDocument();
-//            String contenuFichier = documentMapped.getMetadata().replace('{', ' ').replace('}', ' ').replace(',', '\n');
-//
-//            enregistrerFichier(dossierPath, nomFichier, contenuFichier);
             return iDocumentDAO.addDocument(documentMapped,file);
         }
 
@@ -106,29 +107,6 @@ public class DocumentServiceImpl implements IDocumentService {
     }
 
 
-
-
-    public String getHashedDocument(Document document) throws NoSuchAlgorithmException {
-        // Créez un objet MessageDigest avec l'algorithme de hachage souhaité (SHA-256)
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        // Exemple de métadonnées (à remplacer par vos propres données)
-        String hashedDocument = document.getMetadata();
-        // Convertissez les métadonnées en tableau de bytes
-        byte[] metadataBytes = hashedDocument.getBytes();
-        // Mettez à jour le hachage avec les métadonnées
-        digest.update(metadataBytes);
-        // Récupérez le hachage final sous forme de tableau de bytes
-        byte[] hashedBytes = digest.digest();
-        // Convertissez les bytes en une représentation hexadécimale pour l'affichage
-        StringBuilder hexString = new StringBuilder();
-        for (byte b : hashedBytes) {
-            String hex = Integer.toHexString(0xff & b);
-            if (hex.length() == 1) hexString.append('0');
-            hexString.append(hex);
-        }
-        return hexString.toString();
-    }
-
     public Document getDocumentMapped(DocumentRequest document) throws JsonProcessingException, NoSuchAlgorithmException {
         ModelMapper modelMapper = new ModelMapper();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -140,32 +118,39 @@ public class DocumentServiceImpl implements IDocumentService {
         Document documentMapped = modelMapper.map(document, Document.class);
 
         documentMapped.setMetadata(jsonString);
-
-//        String hashedDocument = getHashedDocument(documentMapped);
-//        documentMapped.setHashedDocument(hashedDocument);
         return  documentMapped;
     }
 
-    public static void enregistrerFichier(String dossierPath, String nomFichier, String contenu) throws IOException {
+    @Override
+    public String telechargerFichier(Integer id){
         try {
-            // Créez un objet File pour le fichier
-            File fichier = new File(dossierPath + File.separator + nomFichier);
+            Optional<Document> document = getDocumentById(id);
+            String localFilePath = document.get().getLinkDocument();
+            File file = new File(localFilePath);
+            if (!file.exists()) {
+                System.out.println("Le fichier local spécifié n'existe pas.");
+                return "Le fichier local spécifié n'existe pas.";
+            }
 
-            // Créez un flux de sortie pour écrire dans le fichier
-            FileOutputStream fluxSortie = new FileOutputStream(fichier);
+            String fileName = file.getName();
 
-            // Convertissez le contenu en tableau de bytes
-            byte[] bytes = contenu.getBytes();
+            FileInputStream inputStream = new FileInputStream(file);
+            String saveFilePath = saveDir + File.separator + fileName;
+            FileOutputStream outputStream = new FileOutputStream(saveFilePath);
 
-            // Écrivez le contenu dans le fichier
-            fluxSortie.write(bytes);
+            int bytesRead;
+            byte[] buffer = new byte[4096];
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
 
-            // Fermez le flux de sortie
-            fluxSortie.close();
-
-            System.out.println("Le fichier a été enregistré avec succès dans " + fichier.getAbsolutePath());
+            outputStream.close();
+            inputStream.close();
+            System.out.println("Le fichier a été téléchargé avec succès !");
+            return "Le fichier a été téléchargé avec succès !";
         } catch (IOException e) {
             e.printStackTrace();
+            return "Erreur lors du téléchargement : EXCEPTION";
         }
     }
     private RowMapper<Document> rowMapper = (rs, rowNum) -> {

@@ -77,4 +77,10 @@ public class DocumentController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date date_de_creation) {
         return iDocumentService.searchDocuments(nom, type,date_de_creation);
     }
+
+
+    @GetMapping("/download/{id}")
+    public String telechargerFichier(@PathVariable Integer id){
+      return iDocumentService.telechargerFichier(id);
+    }
 }

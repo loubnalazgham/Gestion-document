@@ -50,13 +50,8 @@
             try {
                 document.setNomDocument(file.getOriginalFilename());
                 document.setTypeDocument(file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1));
-//                Path filePath = Paths.get(dossierPath, document.getNomDocument());
-//                BasicFileAttributeView attributeView = Files.getFileAttributeView(filePath, BasicFileAttributeView.class);
-//                FileTime fileTime = attributeView.readAttributes().creationTime();
-//                LocalDateTime creationDateTime = LocalDateTime.ofInstant(fileTime.toInstant(), ZoneId.systemDefault());
                 document.setDateCreation(LocalDateTime.now());
-//                document.setDateCreation(creationDateTime);
-                document.setLinkDocument("http://localhost:8081/documents/"+document.getNomDocument());
+                document.setLinkDocument(dossierPath+"/"+document.getNomDocument());
 
                 KeyHolder keyHolder = new GeneratedKeyHolder();
                 jdbcTemplate.update(properties.getProperty("insert.document"),getSqlParameterSourceDocument(document),keyHolder);

@@ -29,8 +29,8 @@ public interface IDocumentService {
     Optional<Document> updateDocument(DocumentRequest document) throws DocumentUpdateFailException, NoSuchAlgorithmException, JsonProcessingException;
 
     List<Document> getDocumentByNom(String nom);
-     List<Document> searchDocuments(String nom, String type, Date date_de_creation) ;
-
+    List<Document> searchDocuments(String nom, String type, Date date_de_creation) ;
+    String telechargerFichier(Integer id);
 
 
     }
