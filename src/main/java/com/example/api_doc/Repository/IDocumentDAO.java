@@ -27,9 +27,6 @@ public interface IDocumentDAO {
 
     List<Document> getDocumentByNom(String nom);
 
-    List<Document> getDocumentByDateCreation(Date date);
-
-    List<Document> getDocumentByType(String type);
 
 
 }

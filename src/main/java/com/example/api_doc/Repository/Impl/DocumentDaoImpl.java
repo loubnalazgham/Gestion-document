@@ -50,18 +50,13 @@
             try {
                 document.setNomDocument(file.getOriginalFilename());
                 document.setTypeDocument(file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1));
-                Path filePath = Paths.get(dossierPath, document.getNomDocument());
-                BasicFileAttributeView attributeView = Files.getFileAttributeView(filePath, BasicFileAttributeView.class);
-                FileTime fileTime = attributeView.readAttributes().creationTime();
-                LocalDateTime creationDateTime = LocalDateTime.ofInstant(fileTime.toInstant(), ZoneId.systemDefault());
-//                document.setDateCreation(LocalDateTime.now());
-                document.setDateCreation(creationDateTime);
+//                Path filePath = Paths.get(dossierPath, document.getNomDocument());
+//                BasicFileAttributeView attributeView = Files.getFileAttributeView(filePath, BasicFileAttributeView.class);
+//                FileTime fileTime = attributeView.readAttributes().creationTime();
+//                LocalDateTime creationDateTime = LocalDateTime.ofInstant(fileTime.toInstant(), ZoneId.systemDefault());
+                document.setDateCreation(LocalDateTime.now());
+//                document.setDateCreation(creationDateTime);
                 document.setLinkDocument("http://localhost:8081/documents/"+document.getNomDocument());
-
-
-
-
-
 
                 KeyHolder keyHolder = new GeneratedKeyHolder();
                 jdbcTemplate.update(properties.getProperty("insert.document"),getSqlParameterSourceDocument(document),keyHolder);
@@ -136,30 +131,6 @@
                 return Collections.emptyList();
             }
         }
-
-        @Override
-        public List<Document> getDocumentByDateCreation(Date date) {
-            Map<String,Object> params = new HashMap<>();
-            params.put(DOCUMENT_DATE_CREATION,date);
-            try {
-                return jdbcTemplate.query(properties.getProperty("select.document.by.date"),new MapSqlParameterSource(params),getRowMapperDocument());
-            }catch (EmptyResultDataAccessException e){
-                return Collections.emptyList();
-            }
-        }
-
-        @Override
-        public List<Document> getDocumentByType(String type) {
-            Map<String,Object> params = new HashMap<>();
-            params.put(DOCUMENT_TYPE,type);
-            try {
-                return jdbcTemplate.query(properties.getProperty("select.document.by.type"),new MapSqlParameterSource(params),getRowMapperDocument());
-            }catch (EmptyResultDataAccessException e){
-                return Collections.emptyList();
-            }
-        }
-
-
 
         private MapSqlParameterSource getSqlParameterSourceDocument(Document document){
             return new MapSqlParameterSource()

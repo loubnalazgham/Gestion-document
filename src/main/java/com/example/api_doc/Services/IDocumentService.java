@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -28,8 +29,6 @@ public interface IDocumentService {
     Optional<Document> updateDocument(DocumentRequest document) throws DocumentUpdateFailException, NoSuchAlgorithmException, JsonProcessingException;
 
     List<Document> getDocumentByNom(String nom);
-    List<Document> getDocumentByDateCreation(Date date);
-    List<Document> getDocumentByType(String type);
      List<Document> searchDocuments(String nom, String type, Date date_de_creation) ;
 
 

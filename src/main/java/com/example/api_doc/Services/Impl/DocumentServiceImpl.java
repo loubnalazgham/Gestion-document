@@ -9,6 +9,7 @@ import com.example.api_doc.Requests.Attribute;
 import com.example.api_doc.Requests.DocumentRequest;
 import com.example.api_doc.Requests.MetaData;
 import com.example.api_doc.Services.IDocumentService;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -23,7 +24,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -101,16 +105,8 @@ public class DocumentServiceImpl implements IDocumentService {
         return iDocumentDAO.getDocumentByNom(nom);
     }
 
-    @Override
-    public List<Document> getDocumentByDateCreation(Date date) {
-        return iDocumentDAO.getDocumentByDateCreation(date);
 
-    }
 
-    @Override
-    public List<Document> getDocumentByType(String type) {
-        return iDocumentDAO.getDocumentByType(type);
-    }
 
     public String getHashedDocument(Document document) throws NoSuchAlgorithmException {
         // Créez un objet MessageDigest avec l'algorithme de hachage souhaité (SHA-256)
@@ -202,7 +198,12 @@ public class DocumentServiceImpl implements IDocumentService {
         }
         if (date_de_creation != null) {
             sb.append("AND DATE_CREATION = ?");
-            params.add(date_de_creation);
+            Instant instant = date_de_creation.toInstant();
+            // Créer un ZonedDateTime à partir de l'Instant
+            ZonedDateTime zonedDateTime = instant.atZone(ZoneId.systemDefault());
+            // Extraire LocalDateTime à partir de ZonedDateTime
+            LocalDateTime localDateTime = zonedDateTime.toLocalDateTime();
+            params.add(localDateTime);
         }
 
         return jdbcTemplate.query(sb.toString(), rowMapper, params.toArray());

@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Date;
@@ -67,15 +68,7 @@ public class DocumentController {
         return iDocumentService.getDocumentByNom(nom);
     }
 
-    @GetMapping("/byDateCreation")
-    public List<Document> getDocumentByDateCreation(@RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date date) {
-        return iDocumentService.getDocumentByDateCreation(date);
-    }
 
-    @GetMapping("/byType")
-    public List<Document> getDocumentByType(@RequestParam String type) {
-        return iDocumentService.getDocumentByType(type);
-    }
 
     @GetMapping("/search")
     public List<Document> searchDocuments(
